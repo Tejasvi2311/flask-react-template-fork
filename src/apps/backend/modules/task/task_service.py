@@ -1,34 +1,89 @@
-from modules.application.common.types import PaginationResult
-from modules.task.internal.task_reader import TaskReader
-from modules.task.internal.task_writer import TaskWriter
-from modules.task.types import (
-    CreateTaskParams,
-    DeleteTaskParams,
-    GetPaginatedTasksParams,
-    GetTaskParams,
-    Task,
-    TaskDeletionResult,
-    UpdateTaskParams,
-)
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Optional
+
+from modules.application.common.types import PaginationParams, PaginationResult, SortParams
 
 
-class TaskService:
-    @staticmethod
-    def create_task(*, params: CreateTaskParams) -> Task:
-        return TaskWriter.create_task(params=params)
+@dataclass(frozen=True)
+class Task:
+    id: str
+    account_id: str
+    description: str
+    title: str
 
-    @staticmethod
-    def get_task(*, params: GetTaskParams) -> Task:
-        return TaskReader.get_task(params=params)
 
-    @staticmethod
-    def get_paginated_tasks(*, params: GetPaginatedTasksParams) -> PaginationResult[Task]:
-        return TaskReader.get_paginated_tasks(params=params)
+@dataclass(frozen=True)
+class GetTaskParams:
+    account_id: str
+    task_id: str
 
-    @staticmethod
-    def update_task(*, params: UpdateTaskParams) -> Task:
-        return TaskWriter.update_task(params=params)
 
-    @staticmethod
-    def delete_task(*, params: DeleteTaskParams) -> TaskDeletionResult:
-        return TaskWriter.delete_task(params=params)
+@dataclass(frozen=True)
+class GetPaginatedTasksParams:
+    account_id: str
+    pagination_params: PaginationParams
+    sort_params: Optional[SortParams] = None
+
+
+@dataclass(frozen=True)
+class CreateTaskParams:
+    account_id: str
+    description: str
+    title: str
+
+
+@dataclass(frozen=True)
+class UpdateTaskParams:
+    account_id: str
+    task_id: str
+    description: str
+    title: str
+    comments:str
+
+
+@dataclass(frozen=True)
+class DeleteTaskParams:
+    account_id: str
+    task_id: str
+
+
+@dataclass(frozen=True)
+class TaskDeletionResult:
+    task_id: str
+    deleted_at: datetime
+    success: bool
+
+
+@dataclass(frozen=True)
+class TaskErrorCode:
+    NOT_FOUND: str = "TASK_ERR_01"
+    BAD_REQUEST: str = "TASK_ERR_02"
+
+@dataclass(frozen=True)
+class TaskComment:
+    # comment_id: str
+    task_id: str
+    account_id: str
+    content: str
+    created_at: datetime
+
+@dataclass(frozen=True)
+class CreateTaskCommentParams:
+    account_id: str
+    task_id: str
+    content: str
+
+@dataclass(frozen=True)
+class DeleteTaskCommentParams:
+    account_id: str
+    task_id: str
+    content: str
+    # comment_id: str
+
+@dataclass(frozen=True)
+class TaskCommentDeletionResult:
+    content: str
+    deleted_at: datetime
+    success: bool
+
